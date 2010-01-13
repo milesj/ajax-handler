@@ -1,77 +1,84 @@
 <?php
 /** 
- * ajax_handler.php
+ * Ajax Handler Component
  *
  * A CakePHP Component that will automatically handle and render AJAX calls and apply the appropriate returned format and headers.
  *
  * @author 		Miles Johnson - www.milesj.me
  * @copyright	Copyright 2006-2009, Miles Johnson, Inc.
  * @license 	http://www.opensource.org/licenses/mit-license.php - Licensed under The MIT License
- * @package		AjaxHandler Component
- * @version 	1.2
  * @link		www.milesj.me/resources/script/ajax-handler-component
  */
  
 class AjaxHandlerComponent extends Object {
 
 	/**
-	 * Current version: www.milesj.me/files/logs/ajax-handler-component
+	 * Current version: www.milesj.me/resources/logs/ajax-handler-component
+	 *
 	 * @access public
 	 * @var string
 	 */
 	public $version = '1.2';
 
 	/**
-	 * Components
+	 * Components.
+	 *
 	 * @access public
 	 * @var array
 	 */
 	public $components = array('RequestHandler');
 
 	/**
-	 * Should we allow remote AJAX calls
+	 * Should we allow remote AJAX calls.
+	 *
 	 * @access public
 	 * @var boolean
 	 */
 	public $allowRemoteRequests = false;
 	
 	/**
-	 * How should XML be formatted: attributes or tags
+	 * How should XML be formatted: attributes or tags.
+	 *
 	 * @access public
 	 * @var string
 	 */
 	public $xmlFormat = 'attributes';
 
 	/**
-	 * Determines if the AJAX call was a success or failure
+	 * Determines if the AJAX call was a success or failure.
+	 *
 	 * @access protected
 	 * @var boolean
 	 */
 	protected $_success = false;
 	
 	/**
-	 * A user given code associated with failure / success messages
+	 * A user given code associated with failure / success messages.
+	 *
 	 * @access protected
 	 * @var int
 	 */
 	protected $_code;
 	
 	/**
-	 * Contains the success messages / errors
+	 * Contains the success messages / errors.
+	 *
 	 * @access protected
 	 * @var array
 	 */
 	protected $_data;
 	
 	/**
-	 * Which actions are handled as AJAX
+	 * Which actions are handled as AJAX.
+	 *
 	 * @access protected
 	 * @var array
 	 */
 	private $__handledActions = array();
 	
 	/**
-	 * Types to respond as
+	 * Types to respond as.
+	 *
 	 * @access protected
 	 * @var array
 	 */
@@ -83,7 +90,8 @@ class AjaxHandlerComponent extends Object {
 	);
 	
 	/**
-	 * Load the Controller object
+	 * Load the Controller object.
+	 *
 	 * @access public
 	 * @param object $Controller
 	 * @return void
@@ -112,7 +120,8 @@ class AjaxHandlerComponent extends Object {
 	}
 	
 	/**
-	 * Determine if the action is an Ajax action and handle it
+	 * Determine if the action is an Ajax action and handle it.
+	 *
 	 * @access public
 	 * @param object $Controller
 	 * @return void
@@ -156,7 +165,8 @@ class AjaxHandlerComponent extends Object {
 	}
 	
 	/**
-	 * A list of actions that are handled as an AJAX call
+	 * A list of actions that are handled as an AJAX call.
+	 *
 	 * @access public
 	 * @return void
 	 */
@@ -171,7 +181,8 @@ class AjaxHandlerComponent extends Object {
 	}
 	
 	/**
-	 * Respond the AJAX call with the gathered data
+	 * Respond the AJAX call with the gathered data.
+	 *
 	 * @access public
 	 * @param string $type
 	 * @param boolean $render - Should the view be rendered for HTML
@@ -204,7 +215,8 @@ class AjaxHandlerComponent extends Object {
 	}
 	
 	/**
-	 * Handle the response as a success or failure alongside a message or error
+	 * Handle the response as a success or failure alongside a message or error.
+	 *
 	 * @access public
 	 * @param boolean $success
 	 * @param mixed $data
@@ -220,7 +232,8 @@ class AjaxHandlerComponent extends Object {
 	}
 	
 	/**
-	 * Makes sure the params passed are clean
+	 * Makes sure the params passed are clean.
+	 *
 	 * @access public
 	 * @param string|int $request
 	 * @param boolean $isString
@@ -241,7 +254,8 @@ class AjaxHandlerComponent extends Object {
 	}
 	
 	/**
-	 * What should happen if the class is called stand alone
+	 * What should happen if the class is called stand alone.
+	 *
 	 * @access public
 	 * @return mixed
 	 */
@@ -250,7 +264,8 @@ class AjaxHandlerComponent extends Object {
 	}
 	
 	/**
-	 * Format the response into the right content type
+	 * Format the response into the right content type.
+	 * 
 	 * @access private
 	 * @uses Xml, XmlHelper
 	 * @param string $type
