@@ -1,11 +1,12 @@
-Ajax Handler v1.2 - CakePHP Component
+Ajax Handler v1.3 - CakePHP Component
 *************************************
 
 Requirements
 ============
 
-	* CakePHP 1.2
-	* PHP 5.2.x
+    * CakePHP 1.2.x
+    * PHP 5.2.x, 5.3.x
+    * SimpleXML
 
 Features
 ========
@@ -16,9 +17,9 @@ Features
     * Respond with a success or failure message
     * Automatically format your data into JSON, XML, HTML or plain text
     * Responds with the correct Content-Type headers
-    * Utilizes the Request Handler
+    * Utilizes the Request Handler and Type Converter
 
 Documentation
 =============
 
-	* http://www.milesj.me/resources/script/ajax-handler-component
+    * http://milesj.me/resources/script/ajax-handler-component
