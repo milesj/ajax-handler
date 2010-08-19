@@ -13,7 +13,7 @@ Features
 
     * Handles pre-defined Controller actions as AJAX
     * Formats the AJAX Post/Get into Controller $data values
-    * Blackholes/Kills the request if the action is not called through AJAX
+    * Blackholes / kills the request if the action is not called through AJAX
     * Respond with a success or failure message
     * Automatically format your data into JSON, XML, HTML or plain text
     * Responds with the correct Content-Type headers

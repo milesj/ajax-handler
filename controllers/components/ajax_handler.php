@@ -10,7 +10,11 @@
  * @link        http://milesj.me/resources/script/ajax-handler-component
  */
 
-App::import('Vendor', 'TypeConverter');
+App::import(array(
+    'type' => 'Vendor',
+    'name' => 'TypeConverter',
+    'file' => 'TypeConverter.php'
+));
  
 class AjaxHandlerComponent extends Object {
 
