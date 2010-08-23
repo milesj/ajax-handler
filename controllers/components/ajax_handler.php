@@ -286,7 +286,7 @@ class AjaxHandlerComponent extends Object {
 
         switch (strtolower($type)) {
             case 'json':
-                $format = json_encode($response);
+                $format = TypeConverter::toJson($response);
             break;
             case 'xml':
                 $format = TypeConverter::toXml($response);
