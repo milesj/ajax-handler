@@ -1,328 +1,357 @@
 <?php
 /**
-* A class that handles the detection and conversion of certain resource formats / content types into other formats.
-* The current formats are supported: XML (RSS, Atom), JSON, Array, Object
-*
-* @author      Miles Johnson - www.milesj.me
-* @copyright   Copyright 2006-2010, Miles Johnson, Inc.
-* @license     http://www.opensource.org/licenses/mit-license.php - Licensed under The MIT License
-* @link        http://milesj.me
-*/
+ * A class that handles the detection and conversion of certain resource formats / content types into other formats.
+ * The current formats are supported: XML (RSS, Atom), JSON, Array, Object
+ *
+ * @author		Miles Johnson - www.milesj.me
+ * @copyright	Copyright 2006-2010, Miles Johnson, Inc.
+ * @license		http://opensource.org/licenses/mit-license.php - Licensed under The MIT License
+ */
 
 class TypeConverter {
 
-    /**
-     * Check to see if data passed is an array.
-     *
-     * @access public
-     * @param string $data
-     * @return boolean
-     * @static
-     */
-    public static function isArray($data) {
-        return is_array($data);
-    }
+	/**
+	 * Should we append the root node into the array when going from XML -> array.
+	 *
+	 * @access public
+	 * @var boolean
+	 */
+	public static $rootInXml = true;
 
-    /**
-     * Check to see if data passed is a JSON object.
-     *
-     * @access public
-     * @param string $data
-     * @return boolean
-     * @static
-     */
-    public static function isJson($data) {
-        return (@json_decode($data) !== null);
-    }
+	/**
+	 * Returns a string for the detected type.
+	 *
+	 * @access public
+	 * @param mixed $data
+	 * @return string
+	 * @static
+	 */
+	public static function is($data) {
+		if (self::isArray($data)) {
+			return 'array';
 
-    /**
-     * Check to see if data passed is an object.
-     *
-     * @access public
-     * @param string $data
-     * @return boolean
-     * @static
-     */
-    public static function isObject($data) {
-        return is_object($data);
-    }
+		} else if (self::isObject($data)) {
+			return 'object';
 
-    /**
-     * Check to see if data passed is an xml document.
-     *
-     * @access public
-     * @param string $data
-     * @return boolean
-     * @static
-     */
-    public static function isXml($data) {
-        $xml = @simplexml_load_string($data);
-        return ($xml === null) ? false : $xml;
-    }
+		} else if (self::isJson($data)) {
+			return 'json';
 
-    /**
-     * Transforms a resource into an array.
-     *
-     * @access public
-     * @param mixed $resource
-     * @param boolean $xmlRoot - To include the XML root node
-     * @return array
-     * @static
-     */
-    public static function toArray($resource, $xmlRoot = false) {
-        if (self::isArray($resource)) {
-            return $resource;
+		} else if (self::isXml($data)) {
+			return 'xml';
+		}
 
-        } else if (self::isObject($resource)) {
-            return self::buildArray($resource);
+		return 'other';
+	}
 
-        } else if (self::isJson($resource)) {
-            return json_decode($resource, true);
+	/**
+	 * Check to see if data passed is an array.
+	 *
+	 * @access public
+	 * @param mixed $data
+	 * @return boolean
+	 * @static
+	 */
+	public static function isArray($data) {
+		return is_array($data);
+	}
 
-        } else if ($xml = self::isXml($resource)) {
-            return self::xmlToArray($xml, $xmlRoot);
-        }
+	/**
+	 * Check to see if data passed is a JSON object.
+	 *
+	 * @access public
+	 * @param mixed $data
+	 * @return boolean
+	 * @static
+	 */
+	public static function isJson($data) {
+		return (@json_decode($data) !== null);
+	}
 
-        return $resource;
-    }
+	/**
+	 * Check to see if data passed is an object.
+	 *
+	 * @access public
+	 * @param mixed $data
+	 * @return boolean
+	 * @static
+	 */
+	public static function isObject($data) {
+		return is_object($data);
+	}
 
-    /**
-     * Transforms a resource into a JSON object.
-     *
-     * @access public
-     * @param mixed $resource
-     * @param boolean $xmlRoot - To include the XML root node
-     * @return json
-     * @static
-     */
-    public static function toJson($resource, $xmlRoot = false) {
-        if (self::isJson($resource)) {
-            return $resource;
+	/**
+	 * Check to see if data passed is an xml document.
+	 *
+	 * @access public
+	 * @param mixed $data
+	 * @return boolean
+	 * @static
+	 */
+	public static function isXml($data) {
+		$xml = @simplexml_load_string($data);
+		return ($xml === null) ? false : $xml;
+	}
 
-        } else {
-            if ($xml = self::isXml($resource)) {
-                $resource = self::xmlToArray($xml, $xmlRoot);
-            }
+	/**
+	 * Transforms a resource into an array.
+	 *
+	 * @access public
+	 * @param mixed $resource
+	 * @return array
+	 * @static
+	 */
+	public static function toArray($resource) {
+		if (self::isArray($resource)) {
+			return $resource;
 
-            return json_encode($resource);
-        }
+		} else if (self::isObject($resource)) {
+			return self::buildArray($resource);
 
-        return $resource;
-    }
+		} else if (self::isJson($resource)) {
+			return json_decode($resource, true);
 
-    /**
-     * Transforms a resource into an object.
-     *
-     * @access public
-     * @param mixed $resource
-     * @return object
-     * @static
-     */
-    public static function toObject($resource) {
-        if (self::isObject($resource)) {
-            return $resource;
+		} else if ($xml = self::isXml($resource)) {
+			return self::xmlToArray($xml);
+		}
 
-        } else if (self::isArray($resource)) {
-            return self::buildObject($resource);
+		return $resource;
+	}
 
-        } else if (self::isJson($resource)) {
-            return json_decode($resource);
+	/**
+	 * Transforms a resource into a JSON object.
+	 *
+	 * @access public
+	 * @param mixed $resource
+	 * @return json
+	 * @static
+	 */
+	public static function toJson($resource) {
+		if (self::isJson($resource)) {
+			return $resource;
 
-        } else if ($xml = self::isXml($resource)) {
-            return $xml;
-        }
+		} else {
+			if ($xml = self::isXml($resource)) {
+				$resource = self::xmlToArray($xml);
+			}
 
-        return $resource;
-    }
+			return json_encode($resource);
+		}
 
-    /**
-     * Transforms a resource into an XML document.
-     *
-     * @access public
-     * @param mixed $resource
-     * @param boolean $asXml - Return as straight XML and not an object
-     * @return object
-     * @static
-     */
-    public static function toXml($resource, $asXml = true) {
-        if (self::isXml($resource)) {
-            return $resource;
-        }
+		return $resource;
+	}
 
-        $resource = self::toArray($resource);
+	/**
+	 * Transforms a resource into an object.
+	 *
+	 * @access public
+	 * @param mixed $resource
+	 * @return object
+	 * @static
+	 */
+	public static function toObject($resource) {
+		if (self::isObject($resource)) {
+			return $resource;
 
-        if (!empty($resource)) {
-            $root = 'root';
-            $data = $resource;
+		} else if (self::isArray($resource)) {
+			return self::buildObject($resource);
 
-            if (count($resource) == 1) {
-                $keys = array_keys($resource);
+		} else if (self::isJson($resource)) {
+			return json_decode($resource);
 
-                if (is_array($resource[$keys[0]])) {
-                    $root = $keys[0];
-                    $data = $resource[$keys[0]];
-                }
-            }
+		} else if ($xml = self::isXml($resource)) {
+			return $xml;
+		}
 
-            $xml = simplexml_load_string('<?xml version="1.0" encoding="utf-8" ?><'. $root .'></'. $root .'>');
-            $response = self::buildXml($xml, $data);
+		return $resource;
+	}
 
-            if ($asXml) {
-                return $response->asXML();
-            }
+	/**
+	 * Transforms a resource into an XML document.
+	 *
+	 * @access public
+	 * @param mixed $resource
+	 * @param boolean $asXml - Return as straight XML and not an object
+	 * @return object
+	 * @static
+	 */
+	public static function toXml($resource, $asXml = true) {
+		if (self::isXml($resource)) {
+			return $resource;
+		}
 
-            return $response;
-        }
+		$resource = self::toArray($resource);
 
-        return $resource;
-    }
+		if (!empty($resource)) {
+			$root = 'root';
+			$data = $resource;
 
-    /**
-     * Turn an object into an array. Alternative to array_map magic.
-     *
-     * @access public
-     * @param object $object
-     * @return array
-     */
-    public static function buildArray($object) {
-        $array = array();
+			if (count($resource) == 1) {
+				$keys = array_keys($resource);
 
-        foreach ($object as $key => $value) {
-            if (is_object($value)) {
-                $array[$key] = self::buildArray($value);
-            } else {
-                $array[$key] = $value;
-            }
-        }
+				if (is_array($resource[$keys[0]])) {
+					$root = $keys[0];
+					$data = $resource[$keys[0]];
+				}
+			}
 
-        return $array;
-    }
+			$xml = simplexml_load_string('<?xml version="1.0" encoding="utf-8" ?><'. $root .'></'. $root .'>');
+			$response = self::buildXml($xml, $data);
 
-    /**
-     * Turn an array into an object. Alternative to array_map magic.
-     *
-     * @access public
-     * @param array $array
-     * @return object
-     */
-    public static function buildObject($array) {
-        $obj = new stdClass();
+			if ($asXml) {
+				return $response->asXML();
+			}
 
-        foreach ($array as $key => $value) {
-            if (is_array($value)) {
-                $obj->{$key} = self::buildObject($value);
-            } else {
-                $obj->{$key} = $value;
-            }
-        }
+			return $response;
+		}
 
-        return $obj;
-    }
+		return $resource;
+	}
 
-    /**
-     * Turn an array into an XML document. Alternative to array_map magic.
-     *
-     * @access public
-     * @param object $xml
-     * @param array $array
-     * @return object
-     */
-    public static function buildXml(&$xml, $array) {
-        if (is_array($array)) {
-            foreach ($array as $element => $value) {
+	/**
+	 * Turn an object into an array. Alternative to array_map magic.
+	 *
+	 * @access public
+	 * @param object $object
+	 * @return array
+	 */
+	public static function buildArray($object) {
+		$array = array();
 
-                // Regular element
-                if (is_string($value)) {
-                    $xml->addChild($element, $value);
+		foreach ($object as $key => $value) {
+			if (is_object($value)) {
+				$array[$key] = self::buildArray($value);
+			} else {
+				$array[$key] = $value;
+			}
+		}
 
-                // Element has child elements or attributes
-                } else if (is_array($value)) {
+		return $array;
+	}
 
-                    // Multiple elements with same name
-                    if (isset($value[0])) {
-                        foreach ($value as $subElement) {
-                            if (is_array($subElement)) {
-                                self::buildXml($xml, array($element => $subElement));
-                            } else {
-                                $xml->addChild($element, $subElement);
-                            }
-                        }
+	/**
+	 * Turn an array into an object. Alternative to array_map magic.
+	 *
+	 * @access public
+	 * @param array $array
+	 * @return object
+	 */
+	public static function buildObject($array) {
+		$obj = new stdClass();
 
-                    // Element with attributes
-                    } else if (isset($value['attributes']) && isset($value['value'])) {
-                        $node = $xml->addChild($element, $value['value']);
+		foreach ($array as $key => $value) {
+			if (is_array($value)) {
+				$obj->{$key} = self::buildObject($value);
+			} else {
+				$obj->{$key} = $value;
+			}
+		}
 
-                        foreach ($value['attributes'] as $attr => $attrValue) {
-                            $node->addAttribute($attr, $attrValue);
-                        }
+		return $obj;
+	}
 
-                        self::buildXml($node, $value['value']);
+	/**
+	 * Turn an array into an XML document. Alternative to array_map magic.
+	 *
+	 * @access public
+	 * @param object $xml
+	 * @param array $array
+	 * @return object
+	 */
+	public static function buildXml(&$xml, $array) {
+		if (is_array($array)) {
+			foreach ($array as $element => $value) {
 
-                    // Regular element with children
-                    } else {
-                        $node = $xml->addChild($element);
-                        self::buildXml($node, $value);
-                    }
-                }
-            }
-        }
+				// Regular element
+				if (is_string($value)) {
+					$xml->addChild($element, $value);
 
-        return $xml;
-    }
+				// Element has child elements or attributes
+				} else if (is_array($value)) {
 
-    /**
-     * Convert a SimpleXML object into an array (last resort).
-     *
-     * @access public
-     * @param object $xml
-     * @param boolean $root - Should we append the root node into the array
-     * @return array
-     */
-    public static function xmlToArray($xml, $root = true) {
-        if (!$xml->children()) {
-            return (string)$xml;
-        }
+					// Multiple elements with same name
+					if (isset($value[0])) {
+						foreach ($value as $subElement) {
+							if (is_array($subElement)) {
+								self::buildXml($xml, array($element => $subElement));
+							} else {
+								$xml->addChild($element, $subElement);
+							}
+						}
 
-        $array = array();
-        foreach ($xml->children() as $element => $node) {
-            $totalElement = count($xml->{$element});
+					// Element with attributes
+					} else if (isset($value['attributes']) && isset($value['value'])) {
+						$node = $xml->addChild($element, $value['value']);
 
-            if (!isset($array[$element])) {
-                $array[$element] = "";
-            }
+						foreach ($value['attributes'] as $attr => $attrValue) {
+							$node->addAttribute($attr, $attrValue);
+						}
 
-            // Has attributes
-            if ($attributes = $node->attributes()) {
-                $data = array(
-                    'attributes' => array(),
-                    'value' => (count($node) > 0) ? self::xmlToArray($node, false) : (string)$node
-                );
+						self::buildXml($node, $value['value']);
 
-                foreach ($attributes as $attr => $value) {
-                    $data['attributes'][$attr] = (string)$value;
-                }
+					// Regular element with children
+					} else {
+						$node = $xml->addChild($element);
+						self::buildXml($node, $value);
+					}
+				}
+			}
+		}
 
-                if ($totalElement > 1) {
-                    $array[$element][] = $data;
-                } else {
-                    $array[$element] = $data;
-                }
+		return $xml;
+	}
 
-            // Just a value
-            } else {
-                if ($totalElement > 1) {
-                    $array[$element][] = self::xmlToArray($node, false);
-                } else {
-                    $array[$element] = self::xmlToArray($node, false);
-                }
-            }
-        }
+	/**
+	 * Convert a SimpleXML object into an array (last resort).
+	 *
+	 * @access public
+	 * @param object $xml
+	 * @return array
+	 */
+	public static function xmlToArray($xml) {
+		if (!$xml->children()) {
+			return (string)$xml;
+		}
 
-        if ($root) {
-            return array($xml->getName() => $array);
-        } else {
-            return $array;
-        }
-    }
+		$array = array();
+		foreach ($xml->children() as $element => $node) {
+			$totalElement = count($xml->{$element});
+
+			if (!isset($array[$element])) {
+				$array[$element] = "";
+			}
+
+			// Has attributes
+			if ($attributes = $node->attributes()) {
+				$data = array(
+					'attributes' => array(),
+					'value' => (count($node) > 0) ? self::xmlToArray($node, false) : (string)$node
+				);
+
+				foreach ($attributes as $attr => $value) {
+					$data['attributes'][$attr] = (string)$value;
+				}
+
+				if ($totalElement > 1) {
+					$array[$element][] = $data;
+				} else {
+					$array[$element] = $data;
+				}
+
+			// Just a value
+			} else {
+				if ($totalElement > 1) {
+					$array[$element][] = self::xmlToArray($node, false);
+				} else {
+					$array[$element] = self::xmlToArray($node, false);
+				}
+			}
+		}
+
+		if (TypeConverter::$rootInXml) {
+			return array($xml->getName() => $array);
+		} else {
+			return $array;
+		}
+	}
 
 }
