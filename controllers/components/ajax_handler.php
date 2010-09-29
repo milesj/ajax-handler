@@ -4,9 +4,9 @@
  *
  * A CakePHP Component that will automatically handle and render AJAX calls and apply the appropriate returned format and headers.
  *
- * @author      Miles Johnson - www.milesj.me
+ * @author      Miles Johnson - http://milesj.me
  * @copyright   Copyright 2006-2010, Miles Johnson, Inc.
- * @license     http://www.opensource.org/licenses/mit-license.php - Licensed under The MIT License
+ * @license     http://opensource.org/licenses/mit-license.php - Licensed under The MIT License
  * @link        http://milesj.me/resources/script/ajax-handler-component
  */
 
@@ -24,7 +24,7 @@ class AjaxHandlerComponent extends Object {
      * @access public
      * @var string
      */
-    public $version = '1.3';
+    public $version = '1.4';
 
     /**
      * Components.
@@ -102,7 +102,7 @@ class AjaxHandlerComponent extends Object {
      * @param object $Controller
      * @return void
      */
-    public function initialize(&$Controller) {
+    public function initialize($Controller) {
         $this->Controller = $Controller;
 
         if ($this->RequestHandler->isAjax()) {
@@ -132,7 +132,7 @@ class AjaxHandlerComponent extends Object {
      * @param object $Controller
      * @return void
      */
-    public function startup(&$Controller) {
+    public function startup($Controller) {
         $this->Controller = $Controller;
 
         $handled = false;
@@ -150,11 +150,14 @@ class AjaxHandlerComponent extends Object {
 
         // Load up the controller with data
         if ($handled === true) {
-            if (!empty($this->Controller->params['form'])) {
-                $data = $this->Controller->params['form'];
+			$data = array();
 
-            } else if (!empty($this->Controller->params['url'])) {
-                $data = $this->Controller->params['url'];
+            if (!empty($this->Controller->params['form'])) {
+                $data = $this->Controller->params['form'] + $data;
+			}
+
+            if (!empty($this->Controller->params['url'])) {
+                $data = $this->Controller->params['url'] + $data;
                 unset($data['ext'], $data['url']);
             }
 
