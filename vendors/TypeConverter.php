@@ -1,10 +1,10 @@
 <?php
 /**
  * A class that handles the detection and conversion of certain resource formats / content types into other formats.
- * The current formats are supported: XML (RSS, Atom), JSON, Array, Object
+ * The current formats are supported: XML (RSS, Atom), JSON, Array, Object, Serialized
  *
- * @author		Miles Johnson - www.milesj.me
- * @copyright	Copyright 2006-2010, Miles Johnson, Inc.
+ * @author		Miles Johnson - http://milesj.me
+ * @copyright	Copyright 2006-2011, Miles Johnson, Inc.
  * @license		http://opensource.org/licenses/mit-license.php - Licensed under The MIT License
  */
 
@@ -35,6 +35,9 @@ class TypeConverter {
 
 		} else if (self::isJson($data)) {
 			return 'json';
+
+		} else if (self::isSerialized($data)) {
+			return 'serialized';
 
 		} else if (self::isXml($data)) {
 			return 'xml';
@@ -77,6 +80,18 @@ class TypeConverter {
 	 */
 	public static function isObject($data) {
 		return is_object($data);
+	}
+
+	/**
+	 * Check to see if data passed has been serialized.
+	 *
+	 * @access public
+	 * @param mixed $data
+	 * @return boolean
+	 * @static
+	 */
+	public static function isSerialized($data) {
+		return (@unserialize($data) !== false);
 	}
 
 	/**
@@ -166,15 +181,31 @@ class TypeConverter {
 	}
 
 	/**
+	 * Transforms a resource into a serialized form.
+	 *
+	 * @access public
+	 * @param mixed $resource
+	 * @return string
+	 * @static
+	 */
+	public static function toSerialize($resource) {
+		if (!self::isArray($resource) || !self::isObject($resource)) {
+			$resource = self::toArray($resource);
+		}
+
+		return serialize($resource);
+	}
+
+	/**
 	 * Transforms a resource into an XML document.
 	 *
 	 * @access public
 	 * @param mixed $resource
-	 * @param boolean $asXml - Return as straight XML and not an object
+	 * @param boolean $showAttributes
 	 * @return object
 	 * @static
 	 */
-	public static function toXml($resource, $asXml = true) {
+	public static function toXml($resource, $showAttributes = true) {
 		if (self::isXml($resource)) {
 			return $resource;
 		}
@@ -197,11 +228,7 @@ class TypeConverter {
 			$xml = simplexml_load_string('<?xml version="1.0" encoding="utf-8" ?><'. $root .'></'. $root .'>');
 			$response = self::buildXml($xml, $data);
 
-			if ($asXml) {
-				return $response->asXML();
-			}
-
-			return $response;
+			return $response->asXML();
 		}
 
 		return $resource;
