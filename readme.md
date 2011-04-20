@@ -1,4 +1,4 @@
-# Ajax Handler v1.5 #
+# Ajax Handler v1.6 #
 
 A CakePHP Component that will automatically handle and render AJAX calls and apply the appropriate returned format and headers.
 
@@ -6,7 +6,7 @@ A CakePHP Component that will automatically handle and render AJAX calls and app
 
 * CakePHP 1.2.x, 1.3.x
 * PHP 5.2.x, 5.3.x
-* SimpleXML (if outputting XML)
+* SimpleXML - http://php.net/manual/book.simplexml.php
 
 ## Features ##
 

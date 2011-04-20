@@ -24,7 +24,7 @@ class AjaxHandlerComponent extends Object {
 	 * @access public
 	 * @var string
 	 */
-	public $version = '1.5';
+	public $version = '1.6';
 
 	/**
 	 * Components.
@@ -120,7 +120,7 @@ class AjaxHandlerComponent extends Object {
 	}
 
 	/**
-	 * Determine if the action is an Ajax action and handle it.
+	 * Determine if the action is an AJAX action and handle it.
 	 *
 	 * @access public
 	 * @param object $Controller
@@ -129,7 +129,7 @@ class AjaxHandlerComponent extends Object {
 	public function startup($Controller) {
 		$handled = false;
 
-		if ($this->__handledActions == array('*') || in_array($Controller->action, $this->__handledActions)) {
+		if ($this->__handledActions === array('*') || in_array($Controller->action, $this->__handledActions)) {
 			$handled = true;
 		}
 
@@ -175,7 +175,7 @@ class AjaxHandlerComponent extends Object {
 	public function handle() {
 		$actions = func_get_args();
 
-		if ($actions == array('*')) {
+		if ($actions === array('*') || empty($actions)) {
 			$this->__handledActions = array('*');
 
 		} else if (is_array($actions) && !empty($actions)) {
@@ -188,17 +188,16 @@ class AjaxHandlerComponent extends Object {
 	 *
 	 * @access public
 	 * @param string $type
-	 * @param boolean $render - Should the view be rendered for HTML
 	 * @param array $response
 	 * @return mixed
 	 */
-	public function respond($type = 'json', $render = true, $response = array()) {
-		if (!isset($this->__responseTypes[$type])) {
+	public function respond($type = 'json', $response = array()) {
+		if (empty($this->__responseTypes[$type])) {
 			$type = 'json';
 		}
 
 		// Apply response
-		if (!empty($response)) {
+		if (!empty($response) && is_array($response)) {
 			$response = $response + array(
 				'success' => null,
 				'data' => '',
@@ -208,23 +207,21 @@ class AjaxHandlerComponent extends Object {
 			$this->response($response['success'], $response['data'], $response['code']);
 		}
 
-		// Set to null, since RH automatically sets AJAX calls to text/html
+		// Set to null for Cake 1.2
 		$this->RequestHandler->__responseTypeSet = null;
-		$this->RequestHandler->respondAs($this->__responseTypes[$type]);
 
 		if ($type == 'html') {
-			$Controller->layout = $this->RequestHandler->ajaxLayout;
+			$this->RequestHandler->renderAs($Controller, 'ajax');
 			$Controller->autoLayout = true;
 			$Controller->autoRender = $render;
 
 		} else {
+			$this->RequestHandler->respondAs($this->__responseTypes[$type]);
 			$Controller->autoLayout = false;
 			$Controller->autoRender = false;
 
 			echo $this->__format($type);
 		}
-
-		return;
 	}
 
 	/**
@@ -298,7 +295,7 @@ class AjaxHandlerComponent extends Object {
 			case 'html';
 			case 'text':
 			default:
-				$format = $this->_data;
+				$format = (string)$this->_data;
 			break;
 		}
 
