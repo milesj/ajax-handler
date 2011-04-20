@@ -117,6 +117,8 @@ class AjaxHandlerComponent extends Object {
 				}
 			}
 		}
+
+		$this->Controller = $Controller;
 	}
 
 	/**
@@ -164,6 +166,8 @@ class AjaxHandlerComponent extends Object {
 				}
 			}
 		}
+
+		$this->Controller = $Controller;
 	}
 
 	/**
@@ -179,7 +183,7 @@ class AjaxHandlerComponent extends Object {
 			$this->__handledActions = array('*');
 
 		} else if (is_array($actions) && !empty($actions)) {
-			$this->__handledActions = array_unique(array_intersect($actions, get_class_methods($Controller)));
+			$this->__handledActions = array_unique(array_intersect($actions, get_class_methods($this->Controller)));
 		}
 	}
 
@@ -211,14 +215,14 @@ class AjaxHandlerComponent extends Object {
 		$this->RequestHandler->__responseTypeSet = null;
 
 		if ($type == 'html') {
-			$this->RequestHandler->renderAs($Controller, 'ajax');
-			$Controller->autoLayout = true;
-			$Controller->autoRender = $render;
+			$this->RequestHandler->renderAs($this->Controller, 'ajax');
+			$this->Controller->autoLayout = true;
+			$this->Controller->autoRender = true;
 
 		} else {
 			$this->RequestHandler->respondAs($this->__responseTypes[$type]);
-			$Controller->autoLayout = false;
-			$Controller->autoRender = false;
+			$this->Controller->autoLayout = false;
+			$this->Controller->autoRender = false;
 
 			echo $this->__format($type);
 		}
