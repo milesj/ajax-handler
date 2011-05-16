@@ -7,7 +7,7 @@
  * @author      Miles Johnson - http://milesj.me
  * @copyright   Copyright 2006-2011, Miles Johnson, Inc.
  * @license     http://opensource.org/licenses/mit-license.php - Licensed under The MIT License
- * @link        http://milesj.me/resources/script/ajax-handler-component
+ * @link        http://milesj.me/code/cakephp/ajax-handler
  */
 
 App::import(array(
@@ -19,7 +19,7 @@ App::import(array(
 class AjaxHandlerComponent extends Object {
 
 	/**
-	 * Current version: http://milesj.me/resources/logs/ajax-handler-component
+	 * Current version.
 	 *
 	 * @access public
 	 * @var string

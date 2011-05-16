@@ -20,4 +20,4 @@ A CakePHP Component that will automatically handle and render AJAX calls and app
 
 ## Documentation ##
 
-Thorough documentation can be found here: http://milesj.me/resources/script/ajax-handler-component
+Thorough documentation can be found here: http://milesj.me/code/cakephp/ajax-handler

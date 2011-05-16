@@ -1,11 +1,14 @@
 <?php
 /**
+ * Type Converter
+ *
  * A class that handles the detection and conversion of certain resource formats / content types into other formats.
  * The current formats are supported: XML, JSON, Array, Object, Serialized
  *
- * @author		Miles Johnson - http://milesj.me
- * @copyright	Copyright 2006-2010, Miles Johnson, Inc.
- * @license		http://opensource.org/licenses/mit-license.php - Licensed under The MIT License
+ * @author      Miles Johnson - http://milesj.me
+ * @copyright   Copyright 2006-2011, Miles Johnson, Inc.
+ * @license     http://opensource.org/licenses/mit-license.php - Licensed under The MIT License
+ * @link        http://milesj.me/code/php/type-converter
  */
 
 class TypeConverter {
@@ -16,7 +19,7 @@ class TypeConverter {
 	 * @access public
 	 * @var string
 	 */
-	public static $version = '1.1';
+	public static $version = '1.2';
 
 	/**
 	 * Disregard XML attributes and only return the value.
@@ -305,32 +308,43 @@ class TypeConverter {
 	public static function buildXml(&$xml, $array) {
 		if (is_array($array)) {
 			foreach ($array as $key => $value) {
-				if (is_array($value)) {
+				// XML_NONE
+				if (!is_array($value)) {
+					$xml->addChild($key, $value);
+					continue;
+				}
 
-					// Multiple nodes of the same name
-					if (isset($value[0])) {
-						foreach ($value as $kValue) {
-							if (is_array($kValue)) {
-								self::buildXml($xml, array($key => $kValue));
-							} else {
-								$xml->addChild($key, $kValue);
-							}
+				// Multiple nodes of the same name
+				if (isset($value[0])) {
+					foreach ($value as $kValue) {
+						if (is_array($kValue)) {
+							self::buildXml($xml, array($key => $kValue));
+						} else {
+							$xml->addChild($key, $kValue);
 						}
+					}
 
-					// XML_GROUP
-					} else if (isset($value['attributes'])) {
+				// XML_GROUP
+				} else if (isset($value['attributes'])) {
+					if (is_array($value['value'])) {
+						$node = $xml->addChild($key);
+						self::buildXml($node, $value['value']);
+					} else {
 						$node = $xml->addChild($key, $value['value']);
+					}
 
+					if (!empty($value['attributes'])) {
 						foreach ($value['attributes'] as $aKey => $aValue) {
 							$node->addAttribute($aKey, $aValue);
 						}
+					}
 
-					// XML_MERGE
-					// XML_OVERWRITE
-					} else {
-						$node = $xml->addChild($key, (isset($value['value']) ? $value['value'] : ''));
-						unset($value['value']);
+				// XML_MERGE
+				} else if (isset($value['value'])) {
+					$node = $xml->addChild($key, $value['value']);
+					unset($value['value']);
 
+					if (!empty($value)) {
 						foreach ($value as $aKey => $aValue) {
 							if (is_array($aValue)) {
 								self::buildXml($node, array($aKey => $aValue));
@@ -340,9 +354,19 @@ class TypeConverter {
 						}
 					}
 
-				// XML_NONE
+				// XML_OVERWRITE
 				} else {
-					$xml->addChild($key, $value);
+					$node = $xml->addChild($key);
+
+					if (!empty($value)) {
+						foreach ($value as $aKey => $aValue) {
+							if (is_array($aValue)) {
+								self::buildXml($node, array($aKey => $aValue));
+							} else {
+								$node->addChild($aKey, $aValue);
+							}
+						}
+					}
 				}
 			}
 		}
@@ -387,6 +411,10 @@ class TypeConverter {
 							'value' => (string)$node
 						);
 
+						if ($node->count() > 0) {
+							$data['value'] = self::xmlToArray($node, $format);
+						}
+
 						foreach ($node->attributes() as $attr => $value) {
 							$data['attributes'][$attr] = (string)$value;
 						}
@@ -394,12 +422,16 @@ class TypeConverter {
 
 					case self::XML_MERGE:
 					case self::XML_OVERWRITE:
-						foreach ($node->attributes() as $attr => $value) {
-							$data[$attr] = (string)$value;
+						if ($format == self::XML_MERGE) {
+							if ($node->count() > 0) {
+								$data = $data + self::xmlToArray($node, $format);
+							} else {
+								$data['value'] = (string)$node;
+							}
 						}
 
-						if ($format == self::XML_MERGE) {
-							$data['value'] = (string)$node;
+						foreach ($node->attributes() as $attr => $value) {
+							$data[$attr] = (string)$value;
 						}
 					break;
 				}
