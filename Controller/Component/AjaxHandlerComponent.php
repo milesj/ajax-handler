@@ -16,7 +16,7 @@ App::import(array(
 	'file' => 'TypeConverter.php'
 ));
  
-class AjaxHandlerComponent extends Object {
+class AjaxHandlerComponent extends Component {
 
 	/**
 	 * Current version.
@@ -32,7 +32,7 @@ class AjaxHandlerComponent extends Object {
 	 * @access public
 	 * @var array
 	 */
-	public $components = array('RequestHandler');
+//	public $components = array('RequestHandler');
 
 	/**
 	 * Should we allow remote AJAX calls.
@@ -80,12 +80,6 @@ class AjaxHandlerComponent extends Object {
 	 * @access protected
 	 * @var array
 	 */
-	private $__responseTypes = array(
-		'json'	=> 'application/json',
-		'html'	=> 'text/html',
-		'xml'	=> 'text/xml',
-		'text'	=> 'text/plain'
-	);
 
 	/**
 	 * Load the Controller object.
@@ -95,7 +89,8 @@ class AjaxHandlerComponent extends Object {
 	 * @return void
 	 */
 	public function initialize($Controller) {
-		if ($this->RequestHandler->isAjax()) {
+//		$this->Controller = $Controller;
+		if($Controller->request->is('ajax')) {
 			if (isset($this->allowRemoteRequests)) {
 				$this->allowRemote = $this->allowRemoteRequests;
 			}
@@ -135,7 +130,8 @@ class AjaxHandlerComponent extends Object {
 			$handled = true;
 		}
 
-		if (!$this->RequestHandler->isAjax() && $handled) {
+		if (!$Controller->request->is('ajax') && $handled === true) {
+//		if (!$this->RequestHandler->isAjax() && $handled) {
 			if (isset($Controller->Security)) {
 				$Controller->Security->blackHole($Controller, 'You are not authorized to process this request!');
 			} else {
@@ -196,9 +192,6 @@ class AjaxHandlerComponent extends Object {
 	 * @return mixed
 	 */
 	public function respond($type = 'json', $response = array()) {
-		if (empty($this->__responseTypes[$type])) {
-			$type = 'json';
-		}
 
 		// Apply response
 		if (!empty($response) && is_array($response)) {
@@ -211,16 +204,15 @@ class AjaxHandlerComponent extends Object {
 			$this->response($response['success'], $response['data'], $response['code']);
 		}
 
-		// Set to null for Cake 1.2
-		$this->RequestHandler->__responseTypeSet = null;
-
 		if ($type == 'html') {
-			$this->RequestHandler->renderAs($this->Controller, 'ajax');
+			
+			$this->Controller->response->type('ajax');
 			$this->Controller->autoLayout = true;
 			$this->Controller->autoRender = true;
 
 		} else {
-			$this->RequestHandler->respondAs($this->__responseTypes[$type]);
+			
+			$this->Controller->response->type($type);
 			$this->Controller->autoLayout = false;
 			$this->Controller->autoRender = false;
 
