@@ -4,7 +4,7 @@ A CakePHP Component that will automatically handle and render AJAX calls and app
 
 ## Requirements ##
 
-* CakePHP 1.2.x, 1.3.x
+* CakePHP 2.0.0
 * PHP 5.2.x, 5.3.x
 * SimpleXML - http://php.net/manual/book.simplexml.php
 
