@@ -2,10 +2,16 @@
 
 A CakePHP Component that will automatically handle and render AJAX calls and apply the appropriate returned format and headers.
 
+This version is only compatible with CakePHP 1.3.
+
+## Compatibility ##
+
+* v1.x - CakePHP 1.3
+* v2.x - CakePHP 2.0
+
 ## Requirements ##
 
-* CakePHP 1.2.x, 1.3.x
-* PHP 5.2.x, 5.3.x
+* PHP 5.2, 5.3
 * SimpleXML - http://php.net/manual/book.simplexml.php
 
 ## Features ##
