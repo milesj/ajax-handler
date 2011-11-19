@@ -16,7 +16,7 @@ App::import(array(
 	'file' => 'TypeConverter.php'
 ));
  
-class AjaxHandlerComponent extends Object {
+class AjaxHandlerComponent extends Component {
 
 	/**
 	 * Current version.
@@ -24,7 +24,7 @@ class AjaxHandlerComponent extends Object {
 	 * @access public
 	 * @var string
 	 */
-	public $version = '1.6';
+	public $version = '2.0';
 
 	/**
 	 * Components.

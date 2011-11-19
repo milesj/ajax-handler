@@ -1,6 +1,13 @@
-# Ajax Handler v1.6 #
+# Ajax Handler v2.0 #
 
 A CakePHP Component that will automatically handle and render AJAX calls and apply the appropriate returned format and headers.
+
+This version is only compatible with CakePHP 2.0.
+
+## Compatibility ##
+
+* v1.x - CakePHP 1.3
+* v2.x - CakePHP 2.0
 
 ## Requirements ##
 
