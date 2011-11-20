@@ -10,11 +10,7 @@
  * @link        http://milesj.me/code/cakephp/ajax-handler
  */
 
-App::import(array(
-	'type' => 'Vendor',
-	'name' => 'TypeConverter',
-	'file' => 'TypeConverter.php'
-));
+App::import('Vendor', 'TypeConverter');
 
 class AjaxHandlerComponent extends Component {
 
@@ -113,7 +109,7 @@ class AjaxHandlerComponent extends Component {
 	public function startup($controller) {
 		$handled = ($this->_handled === array('*') || in_array($controller->action, $this->_handled));
 
-		if ($controller->request->is('ajax') && !$handled) {
+		if (!$controller->request->is('ajax') && $handled) {
 			if (isset($controller->Security)) {
 				$controller->Security->blackHole($controller, 'You are not authorized to process this request.');
 			} else {

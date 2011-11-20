@@ -20,7 +20,7 @@ class TypeConverter {
 	 * @var string
 	 */
 	public static $version = '1.2';
-
+	
 	/**
 	 * Disregard XML attributes and only return the value.
 	 */
