@@ -11,8 +11,7 @@ This version is only compatible with CakePHP 2.0.
 
 ## Requirements ##
 
-* CakePHP 1.2.x, 1.3.x
-* PHP 5.2.x, 5.3.x
+* PHP 5.2, 5.3
 * SimpleXML - http://php.net/manual/book.simplexml.php
 
 ## Features ##
